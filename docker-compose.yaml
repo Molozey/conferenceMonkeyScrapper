@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+
+    restart: always
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER = ${DB_USER}
+      - POSTGRES_PASSWORD = ${DB_PWD}
+    networks:
+      - main_net
+
+    volumes:
+      - ./database/volume:/var/lib/postgresql/data
+  api:
+    restart: always
+    build:
+      context: ./api_service
+      dockerfile: ./Dockerfile
+      args:
+        progress: plain
+
+    volumes:
+      - './api_service:/api_service'
+    ports:
+      - "${FAST_API_PORT}:${FAST_API_PORT}"
+
+    healthcheck:
+      test: curl --fail http://localhost:${FAST_API_PORT}/testing || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+    networks:
+      - main_net
+
+    env_file: .env
+
+
+networks:
+  main_net:
+    driver: bridge
