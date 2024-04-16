@@ -10,14 +10,16 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_USER = ${DB_USER}
-      - POSTGRES_PASSWORD = ${DB_PWD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PWD}
     networks:
       - main_net
 
     volumes:
       - ./database/volume:/var/lib/postgresql/data
-  api:
+    env_file: ./.env
+
+  backend-api:
     restart: always
     build:
       context: ./api_service
@@ -31,7 +33,7 @@ services:
       - "${FAST_API_PORT}:${FAST_API_PORT}"
 
     healthcheck:
-      test: curl --fail http://localhost:${FAST_API_PORT}/testing || exit 1
+      test: curl --fail http://localhost:${FAST_API_PORT}/testing/healthcheck || exit 1
       interval: 10s
       timeout: 10s
       start_period: 10s
@@ -42,6 +44,25 @@ services:
 
     env_file: .env
 
+  scrapper-service:
+    restart: always
+    build:
+      context: ./events_scrapper
+      dockerfile: ./Dockerfile
+      args:
+        progress: plain
+
+    volumes:
+      - './events_scrapper:/events_scrapper'
+
+    depends_on:
+      - postgres
+      - backend-api
+
+    networks:
+      - main_net
+
+    env_file: .env
 
 networks:
   main_net:

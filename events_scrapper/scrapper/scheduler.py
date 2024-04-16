@@ -23,10 +23,15 @@ class Scheduler:
     async def run(self):
         while True:
             new_events = await self.scrap_engine.find_new_events()
-            if new_events:
+            if new_events and new_events != [[0, []]]:
                 LOGGER.info("New events found")
-                await self.scrap_engine.process_new(new_events)
-                LOGGER.info(f"Successfully set new {len(new_events)} events")
-                await asyncio.sleep(60)
+                result = await self.scrap_engine.process_new(new_events)
+                if result:
+                    LOGGER.info(f"Successfully set new {len(result)} events. Wait 60 sec")
+                await asyncio.sleep(5)
+                continue
+
+            LOGGER.info(f"No new updates: {new_events}")
+            await asyncio.sleep(10)
 
 

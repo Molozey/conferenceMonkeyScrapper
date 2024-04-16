@@ -1,33 +1,18 @@
+import asyncio
 from events_scrapper.scrapper.engines.conference_monkey_engine import (
     ConferenceMonkeyEngine,
 )
 from events_scrapper.scrapper.scheduler import Scheduler
-import asyncio
-import logging
+from events_scrapper.utils.record_utils import select_last_scrapped_url
+from events_scrapper.logs import create_logger
 
-logging.basicConfig(
-    filename="execution.log",
-    level=logging.DEBUG,
-    format="[%(asctime)s] %(levelname)s - %(message)s",  # Setup record output
-    datefmt="%H:%M:%S",
-)
-
-console_output = logging.StreamHandler()
-console_output.setLevel(logging.DEBUG)
-
-# Setup console output
-formatter = logging.Formatter(
-    "[%(asctime)s] SOURCE %(name)-12s: %(levelname)-8s %(message)s", datefmt="%H:%M:%S"
-)
-console_output.setFormatter(formatter)
-logging.getLogger("").addHandler(console_output)
-
-
-async def serve():
-    monkey = ConferenceMonkeyEngine()
-    manager = Scheduler(monkey)
-    await manager.run()
+LOGGER = create_logger(__name__)
 
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    # TODO: off course machine_id not always equals to 1 :)
+    last_selected_url = select_last_scrapped_url(machine_id=1).iloc[0].to_dict()
+    LOGGER.info(f"Starting scraping with init dot of {last_selected_url}")
+    monkey = ConferenceMonkeyEngine(last_detected_url=last_selected_url["last_saved_url"])
+    scheduler = Scheduler(engine=monkey)
+    asyncio.run(scheduler.run())

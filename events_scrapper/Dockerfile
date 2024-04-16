@@ -1,4 +1,15 @@
-FROM python:latest
+FROM python:3.12
 
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN mkdir -p /events_scrapper
+
+ENV PYTHONPATH='events_scrapper'
+
+WORKDIR events_scrapper/
+COPY req.txt .
+
+RUN ls
+
+RUN pip install -r req.txt
+
+WORKDIR /
+CMD ["python", "-m", "events_scrapper.serve"]

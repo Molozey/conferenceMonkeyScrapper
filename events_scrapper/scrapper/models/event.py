@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 import pandas as pd
 from hashlib import md5
@@ -15,13 +16,19 @@ class Event:
     event_date: pd.Timestamp
 
     event_description: str
-    event_meta_info: dict | None = None
+    event_url: str
+
+    event_meta_info: dict | str | None = None
+
+    _event_uid: uuid.UUID = None
 
     def __post_init__(self):
         if self.event_meta_info is None:
             self.event_meta_info = {}
-    @property
-    def event_uid(self):
+        self._event_uid = self.create_event_uid()
+        self.event_meta_info = json.dumps(self.event_meta_info)
+
+    def create_event_uid(self):
         encoded = str(
             {
                 "event_info_source": self.event_info_source,
@@ -32,25 +39,9 @@ class Event:
         ).encode("utf-8")
         return uuid.UUID(bytes=md5(encoded).digest(), version=4)
 
+    @property
+    def event_uid(self):
+        return self._event_uid
+
     def __hash__(self):
         return hash(self.event_uid)
-
-
-if __name__ == "__main__":
-    date = pd.Timestamp("2022-01-02")
-    event = Event(
-        event_info_source="monkey_events",
-        event_name="test_event",
-        event_location="Puskina, Kolotyskina",
-        event_date=date,
-        event_description="test descr",
-        event_meta_info={},
-    )
-    event2 = Event(
-        event_info_source="monkey_events",
-        event_name="test_event",
-        event_location="Puskina, Kolotyskins",
-        event_date=date,
-        event_description="test descr",
-        event_meta_info={},
-    )

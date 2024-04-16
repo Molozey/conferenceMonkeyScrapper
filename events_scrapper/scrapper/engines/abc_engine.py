@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from events_scrapper.scrapper.models.event import Event
+from events_scrapper.utils.record_utils import insert_or_update_events
 from aiohttp import ClientSession
 
 
@@ -25,5 +26,7 @@ class EngineInterface(ABC):
     def info_source(self):
         return self.info_source
 
-    def make_event_record(self):
-        pass
+    async def make_events_record(self, events: list[Event]):
+        if events:
+            insert_or_update_events(events)
+

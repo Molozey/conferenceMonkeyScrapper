@@ -1,2 +1,4 @@
 /venv/
 /database/
+/events_scrapper/execution.log
+/events_scrapper/scrapper/execution.log

@@ -1,10 +1,10 @@
 FROM python:3.12
 
-RUN mkdir -p /apifast
+RUN mkdir -p /api_service
 
-ENV PYTHONPATH='apifast'
+ENV PYTHONPATH='api_service'
 
-WORKDIR apifast/
+WORKDIR api_service/
 COPY req.txt .
 
 RUN ls
@@ -12,4 +12,4 @@ RUN ls
 RUN pip install -r req.txt
 
 WORKDIR /
-CMD ["python", "-m", "apifast.run"]
+CMD ["python", "-m", "api_service.run"]
