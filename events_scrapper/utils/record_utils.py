@@ -83,22 +83,3 @@ ENGINE = lambda: create_engine(
 
 if __name__ == "__main__":
     pass
-    # date = Timestamp("2022-01-02")
-    # event = Event(
-    #     event_info_source="monkey_events",
-    #     event_name="test_event",
-    #     event_location="Puskina, Kolotyskina",
-    #     event_date=date,
-    #     event_description="test descr",
-    #     event_meta_info={},
-    # )
-    # event2 = Event(
-    #     event_info_source="monkey_events",
-    #     event_name="test_event",
-    #     event_location="Puskina, Kolotyskins",
-    #     event_date=date,
-    #     event_description="test descr",
-    #     event_meta_info={},
-    # )
-    #
-    # insert_or_update_events([event, event2])

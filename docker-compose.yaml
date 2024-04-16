@@ -37,7 +37,7 @@ services:
       interval: 10s
       timeout: 10s
       start_period: 10s
-      retries: 3
+      retries: 100
 
     networks:
       - main_net
